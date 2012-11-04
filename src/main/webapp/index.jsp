@@ -4,7 +4,7 @@
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	<script type="text/javascript">
 		jQuery(function($){
-			var ws = new WebSocket("ws://192.168.0.7:8080/realtimechat_sample/api/chat/web_socket");
+			var ws = new WebSocket("ws://localhost:8080/realtimechat_sample/api/chat/web_socket");
 			ws.onopen = function(){
 				console.log("websocket open.");
 			};
@@ -18,6 +18,9 @@
 			
 			ws.onmessage = function(event){
 				$("#log").prepend($("<div>").text(event.data));
+				while($("#log>div").size() > 100){
+					$("#log>div:last").remove();
+				}
 			};			
 		});
 

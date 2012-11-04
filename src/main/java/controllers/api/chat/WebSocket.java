@@ -65,7 +65,7 @@ public class WebSocket extends WebSocketServlet {
 			
 			@Override
 			protected void onClose(int status) {
-				log("WebSocket closed.");
+				log("WebSocket closed."+status);
 				
 			}
 		};
