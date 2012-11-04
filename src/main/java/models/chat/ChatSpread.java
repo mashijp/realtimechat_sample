@@ -11,6 +11,10 @@ public class ChatSpread {
 	
 	private List<ChatOutbound> outbounds = new ArrayList<>();
 	
+	protected int size(){
+		return outbounds.size();
+	}
+	
 	public void addOutbound(ChatOutbound outbound) {
 		outbounds.add(outbound);
 	}
