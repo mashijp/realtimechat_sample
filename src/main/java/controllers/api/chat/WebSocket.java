@@ -9,6 +9,12 @@ import java.nio.CharBuffer;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import models.chat.ChatMessage;
+import models.chat.ChatSpread;
+import models.chat.ChatSpreadContainer;
+import models.chat.protocol.ChatOutbound;
+import models.chat.protocol.WebSocketOutbound;
+
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
 import org.apache.catalina.websocket.WsOutbound;
@@ -30,43 +36,26 @@ public class WebSocket extends WebSocketServlet {
 	@Override
 	protected StreamInbound createWebSocketInbound(String protocol, HttpServletRequest request) {
 		
+		final ChatSpread chatSpread = ChatSpreadContainer.getDefault();
+		
 		return new StreamInbound() {
 			
 			@Override
 			protected void onOpen(final WsOutbound outbound){
 				log("Open!");
-				new Thread(){
-					@Override
-					public void run() {
-						for (int i=0; i<10; i++){
-							try {
-								outbound.writeTextMessage(CharBuffer.wrap("fugahoge!!"));
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-							try {
-								Thread.sleep(1000);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-						try {
-							outbound.close(1000, null);
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				}.start();
+				ChatOutbound chatOutbound = new WebSocketOutbound(outbound);
+				chatSpread.addOutbound(chatOutbound);
 			}
 			
 			@Override
 			protected void onTextData(Reader reader) throws IOException {
+				log("TextData Received.");
 				BufferedReader br = new BufferedReader(reader);
+				StringBuffer sb = new StringBuffer();
 				String line;
 				while((line = br.readLine()) != null){
-					log("Message: "+line);
+					ChatMessage chatMessage = new ChatMessage(line);
+					chatSpread.spread(chatMessage);
 				}
 			}
 			
@@ -77,6 +66,7 @@ public class WebSocket extends WebSocketServlet {
 			@Override
 			protected void onClose(int status) {
 				log("WebSocket closed.");
+				
 			}
 		};
 	}

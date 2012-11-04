@@ -1,10 +1,12 @@
 package models.chat.protocol;
 
+import java.io.IOException;
+
 import models.chat.ChatMessage;
 
 public interface ChatOutbound {
 	
-	public void out(ChatMessage chatMessage);
+	public void out(ChatMessage chatMessage) throws IOException;
 	
 	/**
 	 * 連続的な通信かどうかを返す

@@ -1,18 +1,39 @@
 <html>
+<head>
+
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script type="text/javascript">
+		jQuery(function($){
+			var ws = new WebSocket("ws://192.168.0.7:8080/realtimechat_sample/api/chat/web_socket");
+			ws.onopen = function(){
+				console.log("websocket open.");
+			};
+		
+			$("#messageForm").submit(function(event){
+				ws.send($("#message").val());
+				$("#message").val("");
+				$("#message").focus();
+				return false;
+			});
+			
+			ws.onmessage = function(event){
+				$("#log").prepend($("<div>").text(event.data));
+			};			
+		});
+
+	</script>
+</head>
 <body>
 	<h2>Hello World!</h2>
-	<script type="text/javascript">
-		var ws = new WebSocket("ws://localhost:8080/realtimechat_sample/api/chat/web_socket");
-		ws.onopen = function(){
-			alert("open!");
-			setTimeout(function(){
-				var message = "";
-				for(var i=0; i<1000; i++){
-					message += "hogefugahoge\nhoge";
-				}
-				ws.send(message);
-			},1000);
-		};
-	</script>
+	
+	<form id="messageForm">
+		<input type="text" id="message" style="width: 400px;">
+		<input type="submit" id="send" value="send">
+	</form>
+	
+	<div id="log">
+	
+	</div>
+	
 </body>
 </html>
