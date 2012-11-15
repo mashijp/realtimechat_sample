@@ -33,13 +33,19 @@ public class ChatSpread {
 	public void spread(ChatMessage chatMessage) throws IOException{
 		synchronized (outbounds) {
 			Iterator<ChatOutbound> it = outbounds.iterator();
+			int all = 0;
+			int success = 0;
 			while (it.hasNext()) {
+				all++;
 				ChatOutbound outbound = it.next();
 				outbound.out(chatMessage);
 				if (!outbound.isContinuous()) {
 					it.remove();
 				}
+				success++;
 			}
+			//TODO: Loggerを使う
+			System.out.println("spread executed. Success: "+success+"/"+all);
 		}
 	}
 	
